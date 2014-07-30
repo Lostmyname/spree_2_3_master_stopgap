@@ -1,10 +1,10 @@
 module Spree
   Variant.class_eval do
-    def price_modifier_amount_in(currency, options=nil)
-      return 0 unless options
+    def price_modifier_amount_in(currency, options = {})
+      return 0 unless options.present?
 
-      options.keys.each { |key|
-        m = "#{options[key]}_price_modifier_amount_in".to_sym
+      options.keys.map { |key|
+        m = "#{key}_price_modifier_amount_in".to_sym
         if self.respond_to? m
           self.send(m, currency, options[key])
         else
@@ -13,10 +13,10 @@ module Spree
       }.sum
     end
 
-    def price_modifier_amount(options=nil)
-      return 0 unless options
+    def price_modifier_amount(options = {})
+      return 0 unless options.present?
 
-      options.keys.each { |key|
+      options.keys.map { |key|
         m = "#{options[key]}_price_modifier_amount".to_sym
         if self.respond_to? m
           self.send(m, options[key])
