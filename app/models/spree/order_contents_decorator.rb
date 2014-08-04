@@ -3,6 +3,8 @@ module Spree
     def add(variant, quantity = 1, options = {})
       line_item = add_to_line_item(variant, quantity, options)
       reload_totals
+      shipment = options[:shipment]
+      shipment.present? ? shipment.update_amounts : order.ensure_updated_shipments
       PromotionHandler::Cart.new(order, line_item).activate
       ItemAdjustments.new(line_item).update
       reload_totals
@@ -12,6 +14,8 @@ module Spree
     def remove(variant, quantity = 1, options = {})
       line_item = remove_from_line_item(variant, quantity, options)
       reload_totals
+      shipment = options[:shipment]
+      shipment.present? ? shipment.update_amounts : order.ensure_updated_shipments
       PromotionHandler::Cart.new(order, line_item).activate
       ItemAdjustments.new(line_item).update
       reload_totals
@@ -23,8 +27,9 @@ module Spree
     def add_to_line_item(variant, quantity, options = {})
       line_item = grab_line_item_by_variant(variant, false, options)
 
-      currency = options.delete(:currency)
-      shipment = options.delete(:shipment)
+      opts = options.dup # we will be deleting from the hash, so leave the caller's copy intact
+      currency = opts.delete(:currency) || order.currency
+      shipment = opts.delete(:shipment)
 
       if line_item
         line_item.target_shipment = shipment
@@ -34,17 +39,18 @@ module Spree
         line_item = order.line_items.new(quantity: quantity, variant: variant)
         line_item.target_shipment = shipment
 
-        line_item.build_options(options) if options
+        line_item.build_options(opts) if opts
 
-        currency ||= order.currency
         if currency
           line_item.currency = currency
           line_item.price    = variant.price_in(currency).amount +
-                               variant.price_modifier_amount_in(currency, options)
+                               variant.price_modifier_amount_in(currency, opts)
         else
           line_item.price    = variant.price +
-                               variant.price_modifier_amount(options)
+                               variant.price_modifier_amount(opts)
         end
+
+        line_item.build_options(opts) if opts
       end
 
       line_item.save

@@ -11,10 +11,10 @@ module Spree
 
               extra_params = line_item.except(:variant_id, :quantity, :options)
               line_item = order.contents.add(Spree::Variant.find(line_item[:variant_id]), line_item[:quantity], line_item[:options])
-              line_item.save!
-              raise "Invalid line item: #{line_item}" unless line_item.valid?
               line_item.update!(extra_params) unless extra_params.empty?
             rescue Exception => e
+              puts e
+              puts e.backtrace
               raise "Order import line items: #{e.message} #{line_item}"
             end
           end
