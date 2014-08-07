@@ -38,7 +38,7 @@ module Spree
       return true unless options
 
       options.keys.all? do |key|
-        self.respond_to?("#{key}_match".to_sym) ||
+        !self.respond_to?("#{key}_match".to_sym) ||
         self.send("#{key}_match".to_sym, line_item, options[key])
       end
     end
@@ -58,10 +58,10 @@ module Spree
                     }
         if current_line_item
           current_line_item.quantity += other_order_line_item.quantity
-          current_line_item.save
+          current_line_item.save!
         else
           other_order_line_item.order_id = self.id
-          other_order_line_item.save
+          other_order_line_item.save!
         end
       end
 

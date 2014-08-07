@@ -1,13 +1,16 @@
 module Spree
   OrderPopulator.class_eval do
-    def populate(variant_id, quantity, options={})
-      attempt_cart_add(variant_id, quantity, options)
+    def populate(variant_id, quantity, options= {})
+      # protect against passing a nil hash being passed in
+      # due to an empty params[:options]
+      attempt_cart_add(variant_id, quantity, options || {})
+      order.ensure_updated_shipments
       valid?
     end
 
     private
 
-    def attempt_cart_add(variant_id, quantity, options={})
+    def attempt_cart_add(variant_id, quantity, options = {})
       quantity = quantity.to_i
       # 2,147,483,647 is crazy.
       # See issue #2695.
