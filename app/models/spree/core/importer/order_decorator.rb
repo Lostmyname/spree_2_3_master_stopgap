@@ -43,7 +43,18 @@ module Spree
 
               extra_params = line_item.except(:variant_id, :quantity, :options)
               line_item = order.contents.add(Spree::Variant.find(line_item[:variant_id]), line_item[:quantity], line_item[:options])
-              line_item.update!(extra_params) unless extra_params.empty?
+                            # Here we have the right price, because order contents.
+              # From 22:30 testing, it seems that extra_params contains only price&currency
+              # Since in the order contents, we make sure that we set the price
+              # We are safe to delete the price & currency
+              # Also, ruby can't delete multiple keys ... :(
+              extra_params.delete(:currency)
+              extra_params.delete(:price)
+              # We need to raise the errors for wrong names, still
+              # Which happen, somehow only when we do that update.
+              # Rails man...
+              line_item.update!(extra_params)
+              # here we have the wrong price because update.
             rescue Exception => e
               raise "Order import line items: #{e.message} #{line_item}"
             end
