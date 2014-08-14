@@ -9,7 +9,7 @@ module Spree
             ensure_country_id_from_params params[:bill_address_attributes]
             ensure_state_id_from_params params[:bill_address_attributes]
 
-            create_params = params.slice :currency
+            create_params = params.slice :currency, :reseller, :reseller_reference
             order = Spree::Order.create! create_params
             order.associate_user!(user)
 
