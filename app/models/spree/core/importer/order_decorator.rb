@@ -2,15 +2,18 @@ module Spree
   module Core
     module Importer
       Order.class_eval do
-        def self.import(user, params)
+        def self.import(user, params, options={})
           begin
             ensure_country_id_from_params params[:ship_address_attributes]
             ensure_state_id_from_params params[:ship_address_attributes]
             ensure_country_id_from_params params[:bill_address_attributes]
             ensure_state_id_from_params params[:bill_address_attributes]
 
-            create_params = params.slice :currency, :reseller, :reseller_reference
-            order = Spree::Order.create! create_params
+            # Use options[:create_params] to insert any attributes which need to be present before
+            # creating line items, shipments, etc
+            create_params = [:currency] + (options[:create_params] || [])
+            create_params = params.slice(*create_params)
+
             order.associate_user!(user)
 
             create_line_items_from_params(params.delete(:line_items_attributes),order)
