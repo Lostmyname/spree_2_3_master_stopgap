@@ -14,6 +14,7 @@ module Spree
             create_params = [:currency] + (options[:create_params] || [])
             create_params = params.slice(*create_params)
 
+            order = Order.create! create_params
             order.associate_user!(user)
 
             create_line_items_from_params(params.delete(:line_items_attributes),order)
