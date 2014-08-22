@@ -49,7 +49,7 @@ module Spree
               line_item = order.contents.add(Spree::Variant.find(line_item[:variant_id]), line_item[:quantity], line_item[:options])
               line_item.update!(extra_params) unless extra_params.empty?
             rescue Exception => e
-              raise "Order import line items: #{e.message} #{line_item}"
+              raise "(csv line: #{k}) #{e.message}."
             end
           end
         end
