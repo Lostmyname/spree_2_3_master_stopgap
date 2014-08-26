@@ -22,6 +22,38 @@ module Spree
       line_item
     end
 
+    def update_cart(params)
+      params[:line_items_attributes].each do |index, line_item|
+        options = line_item.delete(:options)
+
+        currency = options[:currency] || order.currency
+        variant = Spree::Variant.find line_item[:variant_id]
+        if currency
+          line_item[:price]    = variant.price_in(currency).amount +
+                                 variant.price_modifier_amount_in(currency, options)
+        else
+          line_item[:price]    = variant.price +
+                                 variant.price_modifier_amount(options)
+        end
+
+        line_item.merge!(options)
+      end
+
+      if order.update_attributes(params)
+        order.line_items = order.line_items.select {|li| li.quantity > 0 }
+        # Update totals, then check if the order is eligible for any cart promotions.
+        # If we do not update first, then the item total will be wrong and ItemTotal
+        # promotion rules would not be triggered.
+        reload_totals
+        PromotionHandler::Cart.new(order).activate
+        order.ensure_updated_shipments
+        reload_totals
+        true
+      else
+        false
+      end
+    end
+
     private
 
     def add_to_line_item(variant, quantity, options = {})
