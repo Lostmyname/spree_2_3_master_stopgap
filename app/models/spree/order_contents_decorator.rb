@@ -1,6 +1,8 @@
 module Spree
   OrderContents.class_eval do
     def add(variant, quantity = 1, options = {})
+      options ||= {}
+
       line_item = add_to_line_item(variant, quantity, options)
       reload_totals
       shipment = options[:shipment]
