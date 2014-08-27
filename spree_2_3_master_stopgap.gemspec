@@ -3,8 +3,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_2_3_master_stopgap'
   s.version     = '2.2.1'
-  s.summary     = 'TODO: Add gem summary here'
-  s.description = 'TODO: Add (optional) gem description here'
+  s.summary     = 'Pulling in some of the Spree master features into a gem we can drop at a later date'
   s.required_ruby_version = '>= 1.9.3'
 
   s.author    = 'Lostmy.name'
