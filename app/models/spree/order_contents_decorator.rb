@@ -66,7 +66,8 @@ module Spree
                                           options: opts)
       end
 
-      line_item.save!
+      # line_item.save! # note: this needs to be upstreamed - https://github.com/spree/spree/commit/9ac714e357cd7374709fab2c275012d697d57e4d#commitcomment-7628155
+      line_item.save
       line_item
     end
 
