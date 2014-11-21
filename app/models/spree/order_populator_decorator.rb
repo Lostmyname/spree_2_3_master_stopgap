@@ -23,7 +23,7 @@ module Spree
       if quantity > 0
         line_item = @order.contents.add(variant, quantity, options.merge(currency: currency))
         unless line_item.valid?
-          errors.add(:base, line_item.errors.messages.values.join(" "))
+          errors.add(:base, line_item.errors.messages.values.last)
           return false
         end
       end
