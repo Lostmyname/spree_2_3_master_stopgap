@@ -1,39 +1,49 @@
-<%= content_for(:page_title) { "State changes for order #{@order.number}" } %>
+<%= render :partial => 'spree/admin/shared/order_tabs', :locals => { :current => 'State Changes' } %>
 
-<table class="index responsive" id="listing_order_state_changes" data-hook>
-  <colgroup>
-     <col style="width: 10%;">
-     <col style="width: 10%;">
-     <col style="width: 10%;">
-     <col style="width: 30%;">
-     <col style="width: 30%;">
-  </colgroup>
+<% content_for :page_title do %>
+  <i class="fa fa-arrow-right"></i> State changes
+<% end %>
 
-  <thead>
-    <tr data-hook="admin_orders_state_changes_headers">
-      <th><%= "Type" %></th>
-      <th><%= "State from" %></th>
-      <th><%= "State to" %></th>
-      <th><%= "User" %></th>
-      <th><%= "Timestamp" %></th>
-    </tr>
-  </thead>
+<% if @items.none? %>
+  <p>No state changes yet!</p>
+<% else %>
 
-  <tbody>
-    <% @items.each_with_index do |item, index| %>
-      <tr>
-        <td class="align-center"><%= item.name.titleize %></td>
-        <td class="align-center"><%= item.previous_state.try(:titleize) %></td>
-        <td class="align-center"><%= item.next_state.titleize %></td>
-        <td class="align-center"><%= link_to item.user.login, admin_user_path(item.user) %></td>
-        <td class="align-center">
-          <%= l(item.created_at).to_time %>
-          <% if item.created_at != item.updated_at %>
-            <small><%= "Updated: #{l(item.updated_at).to_time}" %></small>
-          <% end %>
-        </td>
+  <table class="index responsive" id="listing_order_state_changes" data-hook>
+    <colgroup>
+       <col style="width: 10%;">
+       <col style="width: 10%;">
+       <col style="width: 10%;">
+       <col style="width: 30%;">
+       <col style="width: 30%;">
+    </colgroup>
+
+    <thead>
+      <tr data-hook="admin_orders_state_changes_headers">
+        <th><%= "Type" %></th>
+        <th><%= "State from" %></th>
+        <th><%= "State to" %></th>
+        <th><%= "User" %></th>
+        <th><%= "Timestamp" %></th>
       </tr>
-    <% end %>
-  </tbody>
+    </thead>
 
-</table>
+    <tbody>
+      <% @items.each_with_index do |item, index| %>
+        <tr>
+          <td class="align-center"><%= item.name.titleize %></td>
+          <td class="align-center"><%= item.previous_state.try(:titleize) %></td>
+          <td class="align-center"><%= item.next_state.titleize %></td>
+          <td class="align-center"><%= link_to item.user.login, admin_user_path(item.user) %></td>
+          <td class="align-center">
+            <%= l(item.created_at).to_time %>
+            <% if item.created_at != item.updated_at %>
+              <small><%= "Updated: #{l(item.updated_at).to_time}" %></small>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+
+  </table>
+
+<% end %>

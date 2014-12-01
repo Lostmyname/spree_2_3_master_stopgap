@@ -1,4 +1,4 @@
 <!-- insert_bottom '[data-hook="admin_order_tabs"]' -->
-<li data-hook='admin_order_tabs_state_changes'>
+<li<%== ' class="active"' if current == 'State Changes' %> data-hook='admin_order_tabs_state_changes'>
   <%= link_to_with_icon 'exchange', "State changes", state_changes_admin_order_url(@order) %>
 </li>
