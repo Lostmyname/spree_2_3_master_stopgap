@@ -28,9 +28,9 @@ module Spree
 
     def add_to_line_item(variant, quantity, options = {})
       line_item = grab_line_item_by_variant(variant, false, options)
+      shipment = options.delete(:shipment)
 
       if line_item
-        line_item.target_shipment = options[:shipment] if options.has_key? :shipment
         line_item.quantity += quantity.to_i
         line_item.currency = currency unless currency.nil?
       else
@@ -40,6 +40,8 @@ module Spree
                                           variant: variant,
                                           options: opts)
       end
+
+      line_item.target_shipment = shipment
 
       # line_item.save! # note: this needs to be upstreamed - https://github.com/spree/spree/commit/9ac714e357cd7374709fab2c275012d697d57e4d#commitcomment-7628155
       line_item.save
